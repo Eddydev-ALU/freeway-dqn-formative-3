@@ -216,13 +216,25 @@ def create_q_network(num_actions, device):
 
 
 def train_step(online_net, target_net, optimizer, batch, gamma):
-    """TODO (Member 2): one DQN update.
+    """One DQN update: Bellman target, loss, backpropagation, optimizer step."""
+    states, actions, rewards, next_states, dones = batch
 
-    Predict Q-values with the online network, compute Bellman targets with the
-    target network, compute the loss, backpropagate and take an optimizer step.
-    batch = (states, actions, rewards, next_states, dones) from ReplayBuffer.sample.
-    """
-    raise NotImplementedError("Training step not implemented yet (Member 2)")
+    # Q(s, a) from the online network, only for the action that was actually taken
+    q_values = online_net(states).gather(1, actions.unsqueeze(1)).squeeze(1)
+
+    # Bellman target: r + gamma * max_a' Q_target(s', a'); no future value if the game ended
+    with torch.no_grad():
+        next_q = target_net(next_states).max(dim=1).values
+        targets = rewards + gamma * next_q * (1.0 - dones)
+
+    # Huber loss is less sensitive to outliers than squared error
+    loss = F.smooth_l1_loss(q_values, targets)
+
+    optimizer.zero_grad()
+    loss.backward()
+    nn.utils.clip_grad_norm_(online_net.parameters(), 10.0)  # keeps updates from blowing up
+    optimizer.step()
+    return loss.item()
 
 
 # ===== Main training loop =====
