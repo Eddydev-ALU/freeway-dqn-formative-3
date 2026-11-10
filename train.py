@@ -5,8 +5,20 @@ Run with uv, for example:
 """
 
 import argparse
+from collections import deque
 
+import ale_py
+import cv2
+import gymnasium as gym
+import numpy as np
 import torch
+
+# Register the Atari environments with Gymnasium
+gym.register_envs(ale_py)
+
+ENV_ID = "ALE/Freeway-v5"
+FRAME_SIZE = 84   # each frame is resized to 84 x 84 pixels
+STACK_SIZE = 4    # the agent sees the last 4 frames so it can tell how the cars move
 
 
 def parse_args():
@@ -45,6 +57,55 @@ def get_device():
     if torch.backends.mps.is_available():
         return torch.device("mps")
     return torch.device("cpu")
+
+
+# ---------------------------------------------------------------------------
+# Environment and preprocessing
+# ---------------------------------------------------------------------------
+
+def make_env(render_mode=None):
+    """Create the Freeway environment.
+
+    Freeway-v5 already repeats each chosen action for 4 frames (frameskip=4),
+    so we do not add another frame skip ourselves.
+    The action space has 3 actions: 0 = NOOP, 1 = UP, 2 = DOWN.
+    """
+    return gym.make(ENV_ID, render_mode=render_mode)
+
+
+def preprocess_frame(frame):
+    """Turn one 210x160 RGB frame into an 84x84 grayscale frame.
+
+    Colour is not needed to play the game, and a smaller image makes the
+    network much faster to train.
+    """
+    gray = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
+    resized = cv2.resize(gray, (FRAME_SIZE, FRAME_SIZE), interpolation=cv2.INTER_AREA)
+    return resized.astype(np.uint8)  # keep uint8 (0-255) to save memory in the replay buffer
+
+
+def reset_frame_stack(env, seed=None):
+    """Start a new episode and fill the frame stack with copies of the first frame."""
+    frame, _ = env.reset(seed=seed)
+    first_frame = preprocess_frame(frame)
+    frames = deque([first_frame] * STACK_SIZE, maxlen=STACK_SIZE)
+    return frames
+
+
+def step_frame_stack(env, frames, action):
+    """Take one action and push the new frame onto the stack (the oldest frame drops out).
+
+    terminated = the game really ended (the timer ran out in Freeway).
+    truncated  = the episode was cut off by a step limit.
+    """
+    frame, reward, terminated, truncated, _ = env.step(action)
+    frames.append(preprocess_frame(frame))
+    return frames, reward, terminated, truncated
+
+
+def stack_to_state(frames):
+    """Combine the stacked frames into one state array of shape (4, 84, 84)."""
+    return np.array(frames, dtype=np.uint8)
 
 
 def main():
