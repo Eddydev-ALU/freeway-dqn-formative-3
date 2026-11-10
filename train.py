@@ -59,9 +59,7 @@ def get_device():
     return torch.device("cpu")
 
 
-# ---------------------------------------------------------------------------
-# Environment and preprocessing
-# ---------------------------------------------------------------------------
+# ===== Environment and preprocessing =====
 
 def make_env(render_mode=None):
     """Create the Freeway environment.
@@ -108,9 +106,7 @@ def stack_to_state(frames):
     return np.array(frames, dtype=np.uint8)
 
 
-# ---------------------------------------------------------------------------
-# Experience replay buffer
-# ---------------------------------------------------------------------------
+# ===== Experience replay buffer =====
 
 class ReplayBuffer:
     """Stores past experiences (state, action, reward, next_state, done).
@@ -154,13 +150,8 @@ class ReplayBuffer:
         dones = torch.from_numpy(self.dones[indices]).to(device)
         return states, actions, rewards, next_states, dones
 
-    def __len__(self):
-        return self.size
 
-
-# ---------------------------------------------------------------------------
-# Epsilon-greedy action selection
-# ---------------------------------------------------------------------------
+# ===== Epsilon-greedy action selection =====
 
 def get_epsilon(step, eps_start, eps_end, eps_decay):
     """Linear epsilon decay.
@@ -189,9 +180,7 @@ def select_action(q_network, state, epsilon, num_actions, device):
     return int(q_values.argmax(dim=1).item())
 
 
-# ---------------------------------------------------------------------------
-# Q-network and learning step (to be implemented by Member 2)
-# ---------------------------------------------------------------------------
+# ===== Q-network and learning step (to be implemented by Member 2) =====
 
 def create_q_network(num_actions, device):
     """TODO (Member 2): build the CNN with torch.nn and return it on the device.
@@ -212,9 +201,7 @@ def train_step(online_net, target_net, optimizer, batch, gamma):
     raise NotImplementedError("Training step not implemented yet (Member 2)")
 
 
-# ---------------------------------------------------------------------------
-# Main training loop
-# ---------------------------------------------------------------------------
+# ===== Main training loop =====
 
 def main():
     args = parse_args()
