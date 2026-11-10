@@ -48,7 +48,8 @@ def parse_args():
 
     # Where to save the model and logs
     parser.add_argument("--output-dir", type=str, default=".", help="folder to save results in")
-    parser.add_argument("--exp-name", type=str, default="dqn_model", help="name of this experiment")
+    parser.add_argument("--exp-name", type=str, default="dqn",
+                        help="name of this experiment; the model is saved as <exp-name>_model.pth")
     return parser.parse_args()
 
 
@@ -273,7 +274,11 @@ def main():
     env.close()
     log_file.close()
     print(f"Training log saved to {log_path}")
-    # TODO: save the trained model to dqn_model.pth in args.output_dir
+
+    # Save only the learned weights (state_dict); play.py rebuilds the same network and loads them
+    model_path = os.path.join(args.output_dir, f"{args.exp_name}_model.pth")
+    torch.save(online_net.state_dict(), model_path)
+    print(f"Model saved to {model_path}")
 
 
 if __name__ == "__main__":
