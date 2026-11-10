@@ -289,7 +289,9 @@ def main():
             batch = replay_buffer.sample(args.batch_size, device)
             train_step(online_net, target_net, optimizer, batch, args.gamma)
 
-        # 4. TODO (Member 2): periodically copy the online weights to the target network
+        # 4. Periodically copy the online weights to the target network
+        if step % args.target_update == 0:
+            target_net.load_state_dict(online_net.state_dict())
 
         # 5. When the episode ends, start a new one
         if terminated or truncated:
