@@ -15,7 +15,7 @@ Stable-Baselines3, RLlib, CleanRL or TorchRL). The Q-network, replay buffer,
 
 | Member | Role |
 |---|---|
-| Member1Name | Environment and data: uv setup, environment creation, preprocessing, replay buffer, ε-greedy action selection |
+| Eddy Irasetsa | Environment and data: uv setup, environment creation, preprocessing, replay buffer, ε-greedy action selection |
 | Member2Name | Network and learning: CNN, online and target networks, Bellman target, loss and optimization |
 | Member3Name | Evaluation and documentation: play.py, logging, training plots, saving the model |
 
@@ -70,7 +70,7 @@ This project uses [uv](https://docs.astral.sh/uv/) as its only package manager.
 ```bash
 uv sync                                   # install the exact dependencies from uv.lock
 uv run python train.py --help             # see all hyperparameters
-uv run python train.py --lr 1e-4 --gamma 0.99 --output-dir Member1Name --exp-name exp01
+uv run python train.py --lr 1e-4 --gamma 0.99 --output-dir Eddy_Irasetsa --exp-name exp01
 uv run python play.py                     # watch the trained agent play
 ```
 

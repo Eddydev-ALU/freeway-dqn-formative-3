@@ -1,7 +1,7 @@
 """Train a Deep Q-Network (DQN) agent to play Atari Freeway (ALE/Freeway-v5).
 
 Run with uv, for example:
-    uv run python train.py --lr 1e-4 --gamma 0.99 --output-dir Member1Name --exp-name exp01
+    uv run python train.py --lr 1e-4 --gamma 0.99 --output-dir Eddy_Irasetsa --exp-name exp01
 """
 
 import argparse

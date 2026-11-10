@@ -1,6 +1,6 @@
 # Hyperparameter Experiment Results
 
-**Member Name:** Member1Name
+**Member Name:** Eddy Irasetsa
 
 **Focus:** learning rate and gamma (the other four hyperparameters are also varied
 so that every experiment is a different combination).
@@ -44,19 +44,19 @@ every 1,000 steps, seed 42. Epsilon decays linearly from ε start to ε end over
 
 ## Commands used
 
-Each model is saved in the `Member1Name/` folder.
+Each model is saved in the `Eddy_Irasetsa/` folder.
 
 ```bash
-uv run python train.py --lr 1e-4   --gamma 0.99  --batch-size 32 --eps-start 1.0 --eps-end 0.05 --eps-decay 250000 --output-dir Member1Name --exp-name exp01
-uv run python train.py --lr 2.5e-4 --gamma 0.99  --batch-size 32 --eps-start 1.0 --eps-end 0.05 --eps-decay 250000 --output-dir Member1Name --exp-name exp02
-uv run python train.py --lr 5e-4   --gamma 0.99  --batch-size 32 --eps-start 1.0 --eps-end 0.02 --eps-decay 250000 --output-dir Member1Name --exp-name exp03
-uv run python train.py --lr 1e-3   --gamma 0.99  --batch-size 64 --eps-start 1.0 --eps-end 0.05 --eps-decay 200000 --output-dir Member1Name --exp-name exp04
-uv run python train.py --lr 5e-5   --gamma 0.99  --batch-size 32 --eps-start 1.0 --eps-end 0.10 --eps-decay 250000 --output-dir Member1Name --exp-name exp05
-uv run python train.py --lr 1e-4   --gamma 0.95  --batch-size 32 --eps-start 1.0 --eps-end 0.05 --eps-decay 250000 --output-dir Member1Name --exp-name exp06
-uv run python train.py --lr 1e-4   --gamma 0.90  --batch-size 32 --eps-start 1.0 --eps-end 0.05 --eps-decay 150000 --output-dir Member1Name --exp-name exp07
-uv run python train.py --lr 1e-4   --gamma 0.999 --batch-size 64 --eps-start 1.0 --eps-end 0.01 --eps-decay 300000 --output-dir Member1Name --exp-name exp08
-uv run python train.py --lr 2.5e-4 --gamma 0.97  --batch-size 32 --eps-start 0.9 --eps-end 0.05 --eps-decay 200000 --output-dir Member1Name --exp-name exp09
-uv run python train.py --lr 1e-5   --gamma 0.99  --batch-size 64 --eps-start 1.0 --eps-end 0.05 --eps-decay 250000 --output-dir Member1Name --exp-name exp10
+uv run python train.py --lr 1e-4   --gamma 0.99  --batch-size 32 --eps-start 1.0 --eps-end 0.05 --eps-decay 250000 --output-dir Eddy_Irasetsa --exp-name exp01
+uv run python train.py --lr 2.5e-4 --gamma 0.99  --batch-size 32 --eps-start 1.0 --eps-end 0.05 --eps-decay 250000 --output-dir Eddy_Irasetsa --exp-name exp02
+uv run python train.py --lr 5e-4   --gamma 0.99  --batch-size 32 --eps-start 1.0 --eps-end 0.02 --eps-decay 250000 --output-dir Eddy_Irasetsa --exp-name exp03
+uv run python train.py --lr 1e-3   --gamma 0.99  --batch-size 64 --eps-start 1.0 --eps-end 0.05 --eps-decay 200000 --output-dir Eddy_Irasetsa --exp-name exp04
+uv run python train.py --lr 5e-5   --gamma 0.99  --batch-size 32 --eps-start 1.0 --eps-end 0.10 --eps-decay 250000 --output-dir Eddy_Irasetsa --exp-name exp05
+uv run python train.py --lr 1e-4   --gamma 0.95  --batch-size 32 --eps-start 1.0 --eps-end 0.05 --eps-decay 250000 --output-dir Eddy_Irasetsa --exp-name exp06
+uv run python train.py --lr 1e-4   --gamma 0.90  --batch-size 32 --eps-start 1.0 --eps-end 0.05 --eps-decay 150000 --output-dir Eddy_Irasetsa --exp-name exp07
+uv run python train.py --lr 1e-4   --gamma 0.999 --batch-size 64 --eps-start 1.0 --eps-end 0.01 --eps-decay 300000 --output-dir Eddy_Irasetsa --exp-name exp08
+uv run python train.py --lr 2.5e-4 --gamma 0.97  --batch-size 32 --eps-start 0.9 --eps-end 0.05 --eps-decay 200000 --output-dir Eddy_Irasetsa --exp-name exp09
+uv run python train.py --lr 1e-5   --gamma 0.99  --batch-size 64 --eps-start 1.0 --eps-end 0.05 --eps-decay 250000 --output-dir Eddy_Irasetsa --exp-name exp10
 ```
 
 ## Analysis
