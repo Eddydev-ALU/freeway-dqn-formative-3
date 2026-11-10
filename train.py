@@ -14,6 +14,8 @@ import cv2
 import gymnasium as gym
 import numpy as np
 import torch
+import torch.nn as nn
+import torch.nn.functional as F
 
 # Register the Atari environments with Gymnasium
 gym.register_envs(ale_py)
@@ -183,15 +185,34 @@ def select_action(q_network, state, epsilon, num_actions, device):
     return int(q_values.argmax(dim=1).item())
 
 
-# ===== Q-network and learning step (to be implemented by Member 2) =====
+# ===== Q-network and learning step =====
+
+class QNetwork(nn.Module):
+    """CNN that maps a stack of 4 frames to one Q-value per action."""
+
+    def __init__(self, num_actions):
+        super().__init__()
+        # Convolutional layers find patterns such as the chicken and the cars
+        self.conv = nn.Sequential(
+            nn.Conv2d(4, 32, kernel_size=8, stride=4), nn.ReLU(),   # (4, 84, 84) -> (32, 20, 20)
+            nn.Conv2d(32, 64, kernel_size=4, stride=2), nn.ReLU(),  # -> (64, 9, 9)
+            nn.Conv2d(64, 64, kernel_size=3, stride=1), nn.ReLU(),  # -> (64, 7, 7)
+        )
+        # Fully connected layers turn those patterns into Q-values
+        self.fc = nn.Sequential(
+            nn.Flatten(),                      # 64 * 7 * 7 = 3136 numbers
+            nn.Linear(3136, 512), nn.ReLU(),
+            nn.Linear(512, num_actions),       # one Q-value per action
+        )
+
+    def forward(self, x):
+        x = x.float() / 255.0                  # uint8 (0-255) -> float (0-1)
+        return self.fc(self.conv(x))
+
 
 def create_q_network(num_actions, device):
-    """TODO (Member 2): build the CNN with torch.nn and return it on the device.
-
-    Input: a uint8 batch of shape (batch, 4, 84, 84); divide by 255 inside the network.
-    Output: one Q-value per action, shape (batch, num_actions).
-    """
-    raise NotImplementedError("Q-network not implemented yet (Member 2)")
+    """Build the CNN and move it to the device."""
+    return QNetwork(num_actions).to(device)
 
 
 def train_step(online_net, target_net, optimizer, batch, gamma):
@@ -219,7 +240,6 @@ def main():
     num_actions = env.action_space.n
     replay_buffer = ReplayBuffer(args.buffer_size)
 
-    # TODO (Member 2): create the online and target networks and the optimizer
     online_net = create_q_network(num_actions, device)
     target_net = create_q_network(num_actions, device)
     target_net.load_state_dict(online_net.state_dict())
