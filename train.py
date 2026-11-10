@@ -5,6 +5,8 @@ Run with uv, for example:
 """
 
 import argparse
+import csv
+import os
 from collections import deque
 
 import ale_py
@@ -222,8 +224,16 @@ def main():
     target_net.load_state_dict(online_net.state_dict())
     optimizer = torch.optim.Adam(online_net.parameters(), lr=args.lr)
 
+    # Log one row per episode to a CSV file, used later for the training plots
+    os.makedirs(args.output_dir, exist_ok=True)
+    log_path = os.path.join(args.output_dir, f"{args.exp_name}_log.csv")
+    log_file = open(log_path, "w", newline="")
+    log_writer = csv.writer(log_file)
+    log_writer.writerow(["episode", "total_steps", "episode_reward", "episode_length", "epsilon"])
+
     frames = reset_frame_stack(env, seed=args.seed)
     state = stack_to_state(frames)
+    episode = 0
     episode_reward = 0.0
     episode_length = 0
 
@@ -250,15 +260,20 @@ def main():
 
         # 5. When the episode ends, start a new one
         if terminated or truncated:
-            # TODO (Member 3): log episode reward, episode length and steps for the plots
-            print(f"step {step} | reward {episode_reward} | length {episode_length} | epsilon {epsilon:.3f}")
+            episode += 1
+            log_writer.writerow([episode, step, episode_reward, episode_length, round(epsilon, 4)])
+            log_file.flush()  # write to disk now, so the log survives if training stops early
+            print(f"episode {episode} | step {step} | reward {episode_reward} "
+                  f"| length {episode_length} | epsilon {epsilon:.3f}")
             frames = reset_frame_stack(env)
             state = stack_to_state(frames)
             episode_reward = 0.0
             episode_length = 0
 
     env.close()
-    # TODO (Member 3): save the trained model to dqn_model.pth in args.output_dir
+    log_file.close()
+    print(f"Training log saved to {log_path}")
+    # TODO: save the trained model to dqn_model.pth in args.output_dir
 
 
 if __name__ == "__main__":
