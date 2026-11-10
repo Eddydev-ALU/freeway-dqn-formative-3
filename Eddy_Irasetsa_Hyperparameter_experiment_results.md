@@ -44,7 +44,7 @@ every 1,000 steps, seed 42. Epsilon decays linearly from ε start to ε end over
 
 ## Commands used
 
-Each model is saved in the `Eddy_Irasetsa/` folder.
+Each model (`expNN_model.pth`) and its episode log (`expNN_log.csv`) are saved in the `Eddy_Irasetsa/` folder.
 
 ```bash
 uv run python train.py --lr 1e-4   --gamma 0.99  --batch-size 32 --eps-start 1.0 --eps-end 0.05 --eps-decay 250000 --output-dir Eddy_Irasetsa --exp-name exp01
