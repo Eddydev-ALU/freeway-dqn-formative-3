@@ -189,10 +189,89 @@ def select_action(q_network, state, epsilon, num_actions, device):
     return int(q_values.argmax(dim=1).item())
 
 
+# ---------------------------------------------------------------------------
+# Q-network and learning step (to be implemented by Member 2)
+# ---------------------------------------------------------------------------
+
+def create_q_network(num_actions, device):
+    """TODO (Member 2): build the CNN with torch.nn and return it on the device.
+
+    Input: a uint8 batch of shape (batch, 4, 84, 84); divide by 255 inside the network.
+    Output: one Q-value per action, shape (batch, num_actions).
+    """
+    raise NotImplementedError("Q-network not implemented yet (Member 2)")
+
+
+def train_step(online_net, target_net, optimizer, batch, gamma):
+    """TODO (Member 2): one DQN update.
+
+    Predict Q-values with the online network, compute Bellman targets with the
+    target network, compute the loss, backpropagate and take an optimizer step.
+    batch = (states, actions, rewards, next_states, dones) from ReplayBuffer.sample.
+    """
+    raise NotImplementedError("Training step not implemented yet (Member 2)")
+
+
+# ---------------------------------------------------------------------------
+# Main training loop
+# ---------------------------------------------------------------------------
+
 def main():
     args = parse_args()
     device = get_device()
     print(f"Training on {device} with settings: {vars(args)}")
+
+    # Seed everything so experiments can be repeated
+    np.random.seed(args.seed)
+    torch.manual_seed(args.seed)
+
+    env = make_env()
+    num_actions = env.action_space.n
+    replay_buffer = ReplayBuffer(args.buffer_size)
+
+    # TODO (Member 2): create the online and target networks and the optimizer
+    online_net = create_q_network(num_actions, device)
+    target_net = create_q_network(num_actions, device)
+    target_net.load_state_dict(online_net.state_dict())
+    optimizer = torch.optim.Adam(online_net.parameters(), lr=args.lr)
+
+    frames = reset_frame_stack(env, seed=args.seed)
+    state = stack_to_state(frames)
+    episode_reward = 0.0
+    episode_length = 0
+
+    for step in range(1, args.total_steps + 1):
+        # 1. Choose an action with epsilon-greedy and play it
+        epsilon = get_epsilon(step, args.eps_start, args.eps_end, args.eps_decay)
+        action = select_action(online_net, state, epsilon, num_actions, device)
+        frames, reward, terminated, truncated = step_frame_stack(env, frames, action)
+        next_state = stack_to_state(frames)
+
+        # 2. Store the experience. Only "terminated" counts as done for the
+        #    Bellman target, because a truncated episode could have continued.
+        replay_buffer.add(state, action, reward, next_state, terminated)
+        state = next_state
+        episode_reward += reward
+        episode_length += 1
+
+        # 3. Learn from a random batch once the buffer has enough experiences
+        if step > args.learning_starts and step % args.train_freq == 0:
+            batch = replay_buffer.sample(args.batch_size, device)
+            train_step(online_net, target_net, optimizer, batch, args.gamma)
+
+        # 4. TODO (Member 2): periodically copy the online weights to the target network
+
+        # 5. When the episode ends, start a new one
+        if terminated or truncated:
+            # TODO (Member 3): log episode reward, episode length and steps for the plots
+            print(f"step {step} | reward {episode_reward} | length {episode_length} | epsilon {epsilon:.3f}")
+            frames = reset_frame_stack(env)
+            state = stack_to_state(frames)
+            episode_reward = 0.0
+            episode_length = 0
+
+    env.close()
+    # TODO (Member 3): save the trained model to dqn_model.pth in args.output_dir
 
 
 if __name__ == "__main__":
