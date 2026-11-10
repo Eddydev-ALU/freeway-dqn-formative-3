@@ -158,6 +158,37 @@ class ReplayBuffer:
         return self.size
 
 
+# ---------------------------------------------------------------------------
+# Epsilon-greedy action selection
+# ---------------------------------------------------------------------------
+
+def get_epsilon(step, eps_start, eps_end, eps_decay):
+    """Linear epsilon decay.
+
+    Epsilon starts at eps_start and falls in a straight line to eps_end over
+    eps_decay steps, then stays at eps_end. Early on the agent explores a lot;
+    later it mostly uses what it has learned.
+    """
+    fraction = min(step / eps_decay, 1.0)
+    return eps_start + fraction * (eps_end - eps_start)
+
+
+def select_action(q_network, state, epsilon, num_actions, device):
+    """Choose an action with the epsilon-greedy rule.
+
+    With probability epsilon  -> random action (exploration).
+    With probability 1 - epsilon -> action with the highest Q-value (exploitation).
+    """
+    if np.random.random() < epsilon:
+        return np.random.randint(num_actions)
+
+    # Add a batch dimension: (4, 84, 84) -> (1, 4, 84, 84)
+    state_tensor = torch.from_numpy(state).unsqueeze(0).to(device)
+    with torch.no_grad():  # no gradients needed just to pick an action
+        q_values = q_network(state_tensor)
+    return int(q_values.argmax(dim=1).item())
+
+
 def main():
     args = parse_args()
     device = get_device()
