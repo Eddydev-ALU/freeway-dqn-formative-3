@@ -108,6 +108,56 @@ def stack_to_state(frames):
     return np.array(frames, dtype=np.uint8)
 
 
+# ---------------------------------------------------------------------------
+# Experience replay buffer
+# ---------------------------------------------------------------------------
+
+class ReplayBuffer:
+    """Stores past experiences (state, action, reward, next_state, done).
+
+    Sampling random batches from the buffer breaks the correlation between
+    consecutive frames, which makes training much more stable.
+    When the buffer is full, the oldest experience is overwritten.
+    """
+
+    def __init__(self, capacity):
+        self.capacity = capacity
+        self.position = 0  # where the next experience will be written
+        self.size = 0      # how many experiences are currently stored
+
+        # Pre-allocate arrays; states are uint8 (0-255) to save memory
+        state_shape = (capacity, STACK_SIZE, FRAME_SIZE, FRAME_SIZE)
+        self.states = np.zeros(state_shape, dtype=np.uint8)
+        self.next_states = np.zeros(state_shape, dtype=np.uint8)
+        self.actions = np.zeros(capacity, dtype=np.int64)
+        self.rewards = np.zeros(capacity, dtype=np.float32)
+        self.dones = np.zeros(capacity, dtype=np.float32)
+
+    def add(self, state, action, reward, next_state, done):
+        """Save one experience, overwriting the oldest one when the buffer is full."""
+        self.states[self.position] = state
+        self.actions[self.position] = action
+        self.rewards[self.position] = reward
+        self.next_states[self.position] = next_state
+        self.dones[self.position] = done
+
+        self.position = (self.position + 1) % self.capacity
+        self.size = min(self.size + 1, self.capacity)
+
+    def sample(self, batch_size, device):
+        """Pick a random batch of experiences and return them as tensors on the device."""
+        indices = np.random.randint(0, self.size, size=batch_size)
+        states = torch.from_numpy(self.states[indices]).to(device)
+        actions = torch.from_numpy(self.actions[indices]).to(device)
+        rewards = torch.from_numpy(self.rewards[indices]).to(device)
+        next_states = torch.from_numpy(self.next_states[indices]).to(device)
+        dones = torch.from_numpy(self.dones[indices]).to(device)
+        return states, actions, rewards, next_states, dones
+
+    def __len__(self):
+        return self.size
+
+
 def main():
     args = parse_args()
     device = get_device()
