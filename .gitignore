@@ -1,0 +1,14 @@
+# Python
+__pycache__/
+*.pyc
+
+# uv virtual environment
+.venv/
+
+# Editors and OS files
+.vscode/
+.idea/
+.DS_Store
+
+# Jupyter / Colab
+.ipynb_checkpoints/
