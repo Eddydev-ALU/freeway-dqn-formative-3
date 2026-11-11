@@ -61,14 +61,51 @@ uv run python train.py --lr 2.5e-4 --gamma 0.97  --batch-size 32 --eps-start 0.9
 uv run python train.py --lr 1e-5   --gamma 0.99  --batch-size 64 --eps-start 1.0 --eps-end 0.05 --eps-decay 250000 --output-dir Eddy_Irasetsa --exp-name exp10
 ```
 
+## Greedy evaluation of the saved models
+
+The training rewards above include random ε actions. To see what each saved model really learned, I played
+each one greedily (ε = 0, as play.py does) for 3 games, plus 10 extra games for the two models that beat the baseline.
+
+| Experiment | Greedy mean reward | Share of UP actions | What the agent does |
+|---|---|---|---|
+| 1, 2, 3, 4, 6, 7, 9 | 21.0 (every game) | 100% | presses UP on every step: the same as the always-UP baseline |
+| 5 | **23.8** (13 games, range 23-26) | 87% | waits for gaps in traffic, beats the baseline in every game |
+| 8 | 23.2 (13 games, range 21-26) | 74% | waits for gaps, beats the baseline in most games |
+| 10 | 0.0 | 17% | mostly presses DOWN, never crosses |
+
 ## Analysis
 
-**Best configuration:** TODO (after the runs)
+**Best configuration: experiment 5** (lr 5e-5, γ 0.99, batch 32, ε 1.0 → 0.10 over 250k steps).
+It was the slowest learner and even collapsed for about 25 episodes in the middle of training, but it is the only model that
+reliably learned to dodge cars: greedy play averaged 23.8 and never scored below 23, while most models
+only learned "always press UP" (21).
 
-**Worst configuration:** TODO (after the runs)
+**Worst configuration: experiment 10** (lr 1e-5, batch 64). The learning rate was too small for the network
+to move away from its random starting weights (all Q-values about 0.003). Its greedy action was mostly DOWN, so it
+never crossed, never saw a reward, and never learned anything: 0 in all 244 episodes.
 
-**Effect of learning rate:** TODO
+**Effect of learning rate:**
+- 1e-5 is too low: no learning at all (exp10).
+- From 1e-4 to 2.5e-4, learning starts earlier: steady rewards from episode 71 instead of 94 (exp01 vs exp02, where only lr changed).
+- Above 2.5e-4 there is no further speed-up (exp03: episode 70). At 1e-3 the score peaked and then drifted down (exp04).
+- The final training score was about 22 for every lr that learned. So lr mainly controls how fast learning starts.
+- The lowest working lr (5e-5, exp05) learned slowest but produced the best final policy.
 
-**Effect of gamma:** TODO
+**Effect of gamma:**
+- Lower gamma delays learning: γ 0.95 started about 19 episodes later than γ 0.99 (exp06 vs exp01, where only γ changed).
+  A crossing reward is about 100 steps away, and 0.95^100 ≈ 0.006, so the signal is weak from the bottom of the road.
+- Very high gamma (0.999, exp08) made learning slow and unsteady: the agent stalled at 0-8 for about 50 episodes,
+  because the targets sum about 1000 steps of future reward and are large and noisy.
+- Once learned, γ from 0.90 to 0.99 all reached the same training score (about 22), because Freeway's strategy
+  (go up, avoid nearby cars) does not need long-term planning.
 
-**Final choice and justification:** TODO
+**Main lesson:** the training curves made 9 of the 10 runs look almost equal (about 21-23), but greedy evaluation showed
+that most agents had settled on the simple "always UP" strategy. The two runs that learned to dodge
+(exp05 and exp08) were both slow learners that were still improving at the end and kept exploring longer
+(exp05 kept 10% random actions; exp08 decayed ε over 300k steps). Learning fast made the agents lock into
+"always UP" early; slower learning with more exploration found the better policy.
+
+**Final choice and justification:** experiment 5's configuration (lr 5e-5, γ 0.99, batch 32,
+ε 1.0 → 0.10, decay 250k). It gives the best agent when played greedily, as in play.py (23.8 vs 21 for always-UP),
+and it is the only one that consistently dodges cars. Its weakness is slow and unsteady learning (the mid-run collapse),
+so with more time I would train it for longer and with a larger replay buffer.
