@@ -12,3 +12,6 @@ __pycache__/
 
 # Jupyter / Colab
 .ipynb_checkpoints/
+
+# Personal study notes (kept local)
+study_notes/
