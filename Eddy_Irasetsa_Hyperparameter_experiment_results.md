@@ -23,8 +23,8 @@ every 1,000 steps, seed 42. Epsilon decays linearly from ε start to ε end over
 | 5 | 5e-5 | 0.99 | 32 | 1.0 | 0.10 | 250,000 | Slowest learner: steady rewards only from episode 107 (ε ≈ 0.21). It climbed to 17-19 by episodes 112-117, then collapsed to 0-4 for about 25 episodes (119-143) before recovering and reaching 20 at episode 151. Likely cause: the 50k-step buffer holds only about 24 episodes, so once the policy slipped it filled with failed episodes, and the low learning rate was slow to correct; the 10% random actions helped it find crossings again. It still finished strongly (last-10 mean 22.9, range 20-25) and was still improving at the end. |
 | 6 | 1e-4 | 0.95 | 32 | 1.0 | 0.05 | 250,000 | Only gamma changed vs exp01. Learning started the latest of all runs so far: steady rewards only from episode 113 (ε ≈ 0.12) instead of 94, because with a lower gamma the distant crossing reward looks smaller from the bottom of the road (weaker signal). Once learned, it jumped from 5 to 21 within 6 episodes, and the final level was about the same as exp01 (last-10 mean 23.1, last-50 22.2, range 17-26). Lower gamma slowed learning but did not hurt the final score. |
 | 7 | 1e-4 | 0.90 | 32 | 1.0 | 0.05 | 150,000 | ε reached 0.05 by episode 73 (fast decay), yet steady learning only started at episode 92: even when mostly acting greedily, the very low gamma gave a weak signal at first. After that it learned quickly (20+ by episode 99) and was the most consistent run so far (last-50 mean 22.7, range 19-25, best 27). Smaller, less noisy targets from the low gamma may explain the stability. Freeway mostly needs "go up and avoid nearby cars", which does not require long-term planning. |
-| 8 | 1e-4 | 0.999 | 64 | 1.0 | 0.01 | 300,000 | |
-| 9 | 2.5e-4 | 0.97 | 32 | 0.9 | 0.05 | 200,000 | |
+| 8 | 1e-4 | 0.999 | 64 | 1.0 | 0.01 | 300,000 | Slowest to reach 20 (episode 166). It got its first steady rewards at episode 103, then stalled at 0-8 for about 50 episodes. With γ 0.999 the horizon is about 1000 steps, so each Q-value sums many future crossings, and the targets are large and noisy, which made learning slow and unsteady (the slow ε decay added to the delay). It was still improving at the end (last-25 mean 23.2, last-10 23.0), so it might have gone further with more steps. |
+| 9 | 2.5e-4 | 0.97 | 32 | 0.9 | 0.05 | 200,000 | Fastest learner of all runs: steady rewards from episode 60 (ε ≈ 0.38), 15 by episode 66 and 20 by episode 85. Every setting favoured an early start (lower ε start, faster decay, a fairly high lr, moderate gamma). The final level was the same as most runs (last-50 mean 21.9, range 18-27, best 27), confirming that these settings change the speed of learning more than the final score. |
 | 10 | 1e-5 | 0.99 | 64 | 1.0 | 0.05 | 250,000 | |
 
 ## Results summary
@@ -38,11 +38,11 @@ every 1,000 steps, seed 42. Epsilon decays linearly from ε start to ε end over
 | 5 | 22.9 | 25 | 244 | 55 min* |
 | 6 | 23.1 | 26 | 244 | 48 min* |
 | 7 | 22.7 | 27 | 244 | 50 min* |
-| 8 | | | | |
-| 9 | | | | |
+| 8 | 23.0 | 25 | 244 | 65 min* |
+| 9 | 22.1 | 27 | 244 | 59 min* |
 | 10 | | | | |
 
-\* Experiments 4 and 5 ran at the same time, and so did 6 and 7, on the same machine.
+\* Experiments 4 and 5 ran at the same time, and so did 6 and 7, and 8 and 9, on the same machine.
 
 ## Commands used
 
