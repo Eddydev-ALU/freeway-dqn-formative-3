@@ -25,7 +25,7 @@ every 1,000 steps, seed 42. Epsilon decays linearly from ε start to ε end over
 | 7 | 1e-4 | 0.90 | 32 | 1.0 | 0.05 | 150,000 | ε reached 0.05 by episode 73 (fast decay), yet steady learning only started at episode 92: even when mostly acting greedily, the very low gamma gave a weak signal at first. After that it learned quickly (20+ by episode 99) and was the most consistent run so far (last-50 mean 22.7, range 19-25, best 27). Smaller, less noisy targets from the low gamma may explain the stability. Freeway mostly needs "go up and avoid nearby cars", which does not require long-term planning. |
 | 8 | 1e-4 | 0.999 | 64 | 1.0 | 0.01 | 300,000 | Slowest to reach 20 (episode 166). It got its first steady rewards at episode 103, then stalled at 0-8 for about 50 episodes. With γ 0.999 the horizon is about 1000 steps, so each Q-value sums many future crossings, and the targets are large and noisy, which made learning slow and unsteady (the slow ε decay added to the delay). It was still improving at the end (last-25 mean 23.2, last-10 23.0), so it might have gone further with more steps. |
 | 9 | 2.5e-4 | 0.97 | 32 | 0.9 | 0.05 | 200,000 | Fastest learner of all runs: steady rewards from episode 60 (ε ≈ 0.38), 15 by episode 66 and 20 by episode 85. Every setting favoured an early start (lower ε start, faster decay, a fairly high lr, moderate gamma). The final level was the same as most runs (last-50 mean 21.9, range 18-27, best 27), confirming that these settings change the speed of learning more than the final score. |
-| 10 | 1e-5 | 0.99 | 64 | 1.0 | 0.05 | 250,000 | |
+| 10 | 1e-5 | 0.99 | 64 | 1.0 | 0.05 | 250,000 | Worst run: the reward was 0 in all 244 episodes, not even one lucky crossing. The learning rate was so low that the network barely changed: after training, all three Q-values were still about 0.003, and the greedy action was mostly DOWN (69% of steps). A chicken that mostly presses DOWN never crosses, so no reward ever entered the replay buffer and there was nothing to learn from. |
 
 ## Results summary
 
@@ -40,7 +40,7 @@ every 1,000 steps, seed 42. Epsilon decays linearly from ε start to ε end over
 | 7 | 22.7 | 27 | 244 | 50 min* |
 | 8 | 23.0 | 25 | 244 | 65 min* |
 | 9 | 22.1 | 27 | 244 | 59 min* |
-| 10 | | | | |
+| 10 | 0.0 | 0 | 244 | 74 min |
 
 \* Experiments 4 and 5 ran at the same time, and so did 6 and 7, and 8 and 9, on the same machine.
 
