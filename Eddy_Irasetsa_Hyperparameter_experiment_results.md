@@ -16,7 +16,7 @@ every 1,000 steps, seed 42. Epsilon decays linearly from ε start to ε end over
 
 | Experiment | Learning rate | Gamma | Batch size | Epsilon start | Epsilon end | Epsilon decay (steps) | Observed behaviour |
 |---|---|---|---|---|---|---|---|
-| 1 | 1e-4 | 0.99 | 32 | 1.0 | 0.05 | 250,000 | |
+| 1 | 1e-4 | 0.99 | 32 | 1.0 | 0.05 | 250,000 | Reward stayed at 0 for the first 93 episodes while ε was high (one lucky crossing at episode 72). Learning started at episode 94 (ε ≈ 0.27) and the reward jumped to 20 by episode 102. It then plateaued at about 22 (range 17-26), just above the always-UP baseline of 21, so the agent mainly learned to go up and only sometimes dodges cars. |
 | 2 | 2.5e-4 | 0.99 | 32 | 1.0 | 0.05 | 250,000 | |
 | 3 | 5e-4 | 0.99 | 32 | 1.0 | 0.02 | 250,000 | |
 | 4 | 1e-3 | 0.99 | 64 | 1.0 | 0.05 | 200,000 | |
@@ -31,7 +31,7 @@ every 1,000 steps, seed 42. Epsilon decays linearly from ε start to ε end over
 
 | Experiment | Mean reward (last 10 episodes) | Best episode reward | Total episodes | Training time |
 |---|---|---|---|---|
-| 1 | | | | |
+| 1 | 21.7 | 26 | 244 | 29 min |
 | 2 | | | | |
 | 3 | | | | |
 | 4 | | | | |
