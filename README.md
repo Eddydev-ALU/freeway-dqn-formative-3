@@ -17,7 +17,7 @@ Stable-Baselines3, RLlib, CleanRL or TorchRL). The Q-network, replay buffer,
 |---|---|
 | Eddy Irasetsa | Environment and data: uv setup, environment creation, preprocessing, replay buffer, ε-greedy action selection, training loop, episode logging and model saving |
 | Keane | Network and learning: CNN, online and target networks, Bellman target, loss and optimization |
-| Member3Name | Evaluation and documentation: play.py (live gameplay), training plots, demo video |
+| Ajak Chol | Evaluation and documentation: play.py (live gameplay and greedy evaluation), training plots, demo video, final model selection |
 
 The full task split is in [Task_allocation_sheet.pdf](Task_allocation_sheet.pdf).
 
@@ -71,7 +71,10 @@ This project uses [uv](https://docs.astral.sh/uv/) as its only package manager.
 uv sync                                   # install the exact dependencies from uv.lock
 uv run python train.py --help             # see all hyperparameters
 uv run python train.py --lr 1e-4 --gamma 0.99 --output-dir Eddy_Irasetsa --exp-name exp01
-uv run python play.py                     # watch the trained agent play
+uv run python play.py                     # watch the trained agent play (dqn_model.pth)
+uv run python play.py --no-render --episodes 10            # greedy score check without a window
+uv run python play.py --video demo/gameplay_demo.mp4       # record one game
+uv run python plot_training.py --log Keane_Gaju/exp10_log.csv   # training plots of the best run
 ```
 
 ## DQN Architecture
@@ -113,8 +116,41 @@ The agent plays the action with the highest Q-value.
 
 ## Training Results
 
-TODO (Member 3): plots of episode reward, episode length and steps for the best experiment.
+### Choosing the final model
+
+Training rewards include random ε actions, so we picked the final model by playing every saved
+model **greedily** (ε = 0, exactly as `play.py` does) with `uv run python play.py --model <path> --no-render --episodes 3`.
+
+| Result | Models |
+|---|---|
+| Score exactly 21 in every game (the agent only presses UP) | 17 of 20 |
+| Beat the always-UP baseline | Eddy exp05 (23.3), Eddy exp08 (22.7), **Keane exp10 (30.3)** |
+| Never crossed | Eddy exp10 (0.0) |
+
+**Final model: Keane Gaju, experiment 10** (lr 1e-4, γ 0.97, batch 128, ε 0.8 → 0.10 over 200k steps),
+saved as `dqn_model.pth`. Over 10 greedy games it averaged **30.7 crossings (range 29–32)**, about
+10 more than an agent that always presses UP, because it learned to wait for gaps in the traffic.
+
+### Training plots (best run)
+
+![Episode reward](plots/best_run_rewards.png)
+
+The reward stays near 0 while ε is high, climbs as ε falls, passes the always-UP baseline around
+episode 90 and levels off at about 28 (with 10% random actions still being taken during training).
+
+![Episode length](plots/best_run_episode_length.png)
+
+Every episode lasts exactly 2048 steps, because a Freeway game ends when the timer runs out, not
+when the chicken is hit. Episode length therefore cannot show progress in this game; the reward does.
+
+![Steps](plots/best_run_steps.png)
+
+Each member's 10 experiments side by side: [Eddy](plots/Eddy_Irasetsa_experiments.png),
+[Keane](plots/Keane_Gaju_experiments.png).
 
 ## Gameplay Demonstration
 
-TODO (Member 3): video of the best trained agent playing Freeway.
+![Trained agent playing Freeway](demo/gameplay_demo.gif)
+
+The first 25 seconds of a greedy game by `dqn_model.pth` (left chicken). Full game (32 crossings):
+[demo/gameplay_demo.mp4](demo/gameplay_demo.mp4).
