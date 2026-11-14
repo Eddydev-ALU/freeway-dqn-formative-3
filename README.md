@@ -112,7 +112,7 @@ The agent plays the action with the highest Q-value.
 6. **Target network:** a second copy of the network computes the targets. It is only
    refreshed from the online network every `--target-update` steps, so the targets do not
    move on every update.
-7. **Save:** at the end, the online network's weights are saved to `dqn_model.pth`.
+7. **Save:** at the end, the online network's weights are saved to `<output-dir>/<exp-name>_model.pth`. The model chosen as final is copied to `dqn_model.pth`, which `play.py` loads by default.
 
 ## Training Results
 
