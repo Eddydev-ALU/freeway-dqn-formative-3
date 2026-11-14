@@ -16,7 +16,7 @@ Stable-Baselines3, RLlib, CleanRL or TorchRL). The Q-network, replay buffer,
 | Member | Role |
 |---|---|
 | Eddy Irasetsa | Environment and data: uv setup, environment creation, preprocessing, replay buffer, ε-greedy action selection, training loop, episode logging and model saving |
-| Keane | Network and learning: CNN, online and target networks, Bellman target, loss and optimization |
+| Keane Gaju | Network and learning: CNN, online and target networks, Bellman target, loss and optimization |
 | Ajak Chol | Evaluation and documentation: play.py (live gameplay and greedy evaluation), training plots, demo video, final model selection |
 
 The full task split is in [Task_allocation_sheet.pdf](Task_allocation_sheet.pdf).
