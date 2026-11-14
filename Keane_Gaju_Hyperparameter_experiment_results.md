@@ -63,4 +63,4 @@
 
 ## Files
 
-Models and logs for these runs are in the `Keane/` folder: `exp01_model.pth` to `exp10_model.pth` and the matching `exp01_log.csv` to `exp10_log.csv`. The seed-1 confirmation run described in the Analysis is not one of the 10 experiments in the table. Its numbers come from its console output, and its model file was not kept.
+Models and logs for these runs are in the `Keane_Gaju/` folder: `exp01_model.pth` to `exp10_model.pth` and the matching `exp01_log.csv` to `exp10_log.csv`. The seed-1 confirmation run described in the Analysis is not one of the 10 experiments in the table. Its numbers come from its console output, and its model file was not kept.
