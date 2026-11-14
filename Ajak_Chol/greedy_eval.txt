@@ -1,0 +1,10 @@
+exp01: Average score over 3 game(s): 21.0
+exp02: Average score over 3 game(s): 21.0
+exp03: Average score over 3 game(s): 18.7
+exp04: Average score over 3 game(s): 21.0
+exp05: Average score over 3 game(s): 21.0
+exp06: Average score over 3 game(s): 21.0
+exp07: Average score over 3 game(s): 31.0
+exp08: Average score over 3 game(s): 31.7
+exp09: Average score over 3 game(s): 24.3
+exp10: Average score over 3 game(s): 30.3
