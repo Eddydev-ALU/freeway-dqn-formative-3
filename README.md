@@ -74,7 +74,7 @@ uv run python train.py --lr 1e-4 --gamma 0.99 --output-dir Eddy_Irasetsa --exp-n
 uv run python play.py                     # watch the trained agent play (dqn_model.pth)
 uv run python play.py --no-render --episodes 10            # greedy score check without a window
 uv run python play.py --video demo/gameplay_demo.mp4       # record one game
-uv run python plot_training.py --log Keane_Gaju/exp10_log.csv   # training plots of the best run
+uv run python plot_training.py --log Ajak_Chol/exp08_log.csv   # training plots of the best run
 ```
 
 ## DQN Architecture
@@ -118,25 +118,34 @@ The agent plays the action with the highest Q-value.
 
 ### Choosing the final model
 
-Training rewards include random ε actions, so we picked the final model by playing every saved
-model **greedily** (ε = 0, exactly as `play.py` does) with `uv run python play.py --model <path> --no-render --episodes 3`.
+Training rewards include random ε actions, so we picked the final model by playing all 30 saved
+models **greedily** (ε = 0, exactly as `play.py` does), 3 games each, then 10 games (seeds 100-109)
+for the best ones: `uv run python play.py --model <path> --no-render --episodes 10 --seed 100`.
 
 | Result | Models |
 |---|---|
-| Score exactly 21 in every game (the agent only presses UP) | 17 of 20 |
-| Beat the always-UP baseline | Eddy exp05 (23.3), Eddy exp08 (22.7), **Keane exp10 (30.3)** |
-| Never crossed | Eddy exp10 (0.0) |
+| Only press UP, score exactly 21 (the always-UP baseline) | 21 of 30 |
+| Slightly above the baseline (22-25) | Eddy exp05, Eddy exp08, Ajak exp09 |
+| Learned to wait for gaps (about 30) | **Ajak exp08 (31.6)**, Ajak exp10 (30.9), Keane exp10 (30.7), Ajak exp07 (29.9) |
+| Below the baseline | Ajak exp03 (18.7), Eddy exp10 (0.0) |
 
-**Final model: Keane Gaju, experiment 10** (lr 1e-4, γ 0.97, batch 128, ε 0.8 → 0.10 over 200k steps),
-saved as `dqn_model.pth`. Over 10 greedy games it averaged **30.7 crossings (range 29–32)**, about
-10 more than an agent that always presses UP, because it learned to wait for gaps in the traffic.
+**Final model: Ajak Chol, experiment 8** (lr 1e-4, γ 0.99, batch 64, ε 0.1 → 0.01 over 50k steps),
+saved as `dqn_model.pth`. Over 10 greedy games it averaged **31.6 crossings (range 29–33)**, about
+10 more than an agent that always presses UP, because it waits for gaps in the traffic (NOOP on 22% of steps).
+
+**What the four good models have in common:** they all started with a low ε (0.1, 0.5 or 0.8). The
+untrained network (seed 42) already presses UP 99% of the time, so with little random play the agent crosses
+from the first episode and spends training learning *when* to wait. Runs that started at ε 1.0 played
+randomly (score 0) for 60-190 episodes and then settled on "always UP". Details are in
+[Ajak_Chol_Hyperparameter_experiment_results.md](Ajak_Chol_Hyperparameter_experiment_results.md).
 
 ### Training plots (best run)
 
 ![Episode reward](plots/best_run_rewards.png)
 
-The reward stays near 0 while ε is high, climbs as ε falls, passes the always-UP baseline around
-episode 90 and levels off at about 28 (with 10% random actions still being taken during training).
+The reward starts at about 20 because the untrained network already presses UP. It drops to about 1
+around episode 17, when the first updates change the weights, then recovers, passes the always-UP baseline
+at episode 50 and keeps improving to about 30 (with ε at 0.01 from episode 25).
 
 ![Episode length](plots/best_run_episode_length.png)
 
@@ -146,7 +155,7 @@ when the chicken is hit. Episode length therefore cannot show progress in this g
 ![Steps](plots/best_run_steps.png)
 
 Each member's 10 experiments side by side: [Eddy](plots/Eddy_Irasetsa_experiments.png),
-[Keane](plots/Keane_Gaju_experiments.png).
+[Keane](plots/Keane_Gaju_experiments.png), [Ajak](plots/Ajak_Chol_experiments.png).
 
 ## Gameplay Demonstration
 
