@@ -109,3 +109,11 @@ that most agents had settled on the simple "always UP" strategy. The two runs th
 ε 1.0 → 0.10, decay 250k). It gives the best agent when played greedily, as in play.py (23.8 vs 21 for always-UP),
 and it is the only one that consistently dodges cars. Its weakness is slow and unsteady learning (the mid-run collapse),
 so with more time I would train it for longer and with a larger replay buffer.
+
+**Single-seed caveat:** all 10 runs used seed 42, so each result comes from one set of starting weights.
+Keane repeated her best run with seed 1 and it scored only 20.1 instead of 28.6, so small differences
+between my runs (for example 21 vs 23.8) may not hold with another seed.
+
+**Group's final model:** `dqn_model.pth` is Ajak's experiment 8 (greedy 31.6 over 10 games), not one of mine.
+All my runs started with ε 1.0 or 0.9, and Ajak's experiments showed that a low ε start is what let the
+agent learn to wait for gaps (see [Ajak_Chol_Hyperparameter_experiment_results.md](Ajak_Chol_Hyperparameter_experiment_results.md)).
