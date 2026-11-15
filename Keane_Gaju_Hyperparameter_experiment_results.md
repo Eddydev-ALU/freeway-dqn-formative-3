@@ -1,7 +1,9 @@
 # Hyperparameter Experiment Results
 
 **Member Name:** Keane Gaju
+
 **Environment:** ALE/Freeway-v5 (DQN, PyTorch)
+
 **Focus hyperparameter:** batch size
 
 ## Setup
@@ -47,19 +49,19 @@
 
 **Best run: experiment 10** (lr 1e-4, gamma 0.97, batch 128, epsilon 0.8 to 0.10 over 200k steps, seed 42). It averaged 28.6 crossings over its last 20 episodes, against 20.95 to 22.4 for every other run, and it reached a 10-crossing average at episode 72.
 
-**Second-seed check:** the same configuration repeated with seed 1 (`exp10_seed1`) reached a 10-crossing average earlier (episode 43) but finished with an average of 20.1 over its last 20 episodes (best 24), in line with the other runs. So the configuration is not shown to be better, and the high score of the seed-42 run is likely a seed effect. The seed-to-seed gap for this configuration (about 8 crossings) is larger than the gaps between experiments 1 to 9 (20.95 to 22.4), so those differences are within noise. The seed-42 model is still the strongest saved model, which is what matters when choosing the final `dqn_model.pth`.
+**Second-seed check:** the same configuration repeated with seed 1 (`exp10_seed1`) reached a 10-crossing average earlier (episode 43) but finished with an average of 20.1 over its last 20 episodes (best 24), in line with the other runs. So the configuration is not shown to be better, and the high score of the seed-42 run is likely a seed effect. The seed-to-seed gap for this configuration (about 8 crossings) is larger than the gaps between experiments 1 to 9 (20.95 to 22.4), so those differences are within noise. In the group's greedy evaluation (see the README), this seed-42 model scores 30.7 over 10 games.
 
 **Worst configuration: experiment 9** (lr 2e-4, gamma 0.995, batch 64, epsilon 0.8 to 0.05 over 150k steps). It had the lowest final average (20.95). The difference from most other runs is only about 1 crossing, so with one seed per run it is a weak "worst".
 
-**Batch size (experiments 1 to 5, only batch size changes):** final averages were 22.2, 22.05, 21.6, 21.8 and 22.05. This spread is too small to separate from run-to-run noise, so batch size had no clear effect on the final score. Batch 16 and 32 reached an average of 10 a little sooner (episodes 84 and 74) than batch 64 to 256 (episodes 108 to 129), but the trend is not smooth.
+**Batch size (experiments 1 to 5, only batch size changes):** final averages were 22.2, 22.05, 21.6, 21.8 and 22.05. This spread is too small to separate from run-to-run noise, so batch size had no clear effect on the final score. Batch 16 and 32 reached an average of 10 a little sooner (episodes 84 and 74) than batch 64 to 256 (episodes 108 to 129), but the trend is not smooth. In the group's greedy evaluation (see the README), these runs fall in the group that only presses UP (score 21), so batch size did not change what the agent learned.
 
 **Epsilon decay:** a shorter decay made the agent start earning reward sooner. Decay over 150k steps reached an average of 10 at episode 39, 200k at episode 72, 250k at episodes 74 to 129, and 300k at episode 125. This agrees with the group's baseline observation that reward stayed at zero while epsilon was high and jumped once it dropped. A faster start did not give a better final score: experiment 9 started fastest but finished last.
 
 **Learning rate:** from 5e-5 (experiment 7) to 5e-4 (experiment 6), final averages stayed between 22.1 and 22.4. Learning rate had little effect in this range.
 
-**Gamma and epsilon end:** the seed-42 run of experiment 10 used the lowest gamma (0.97) and the highest final epsilon (0.10), but its seed-1 repeat did not reproduce the high score, so we cannot conclude that either value helps. Scores in this table were reached while the agent still took random actions (10% in experiment 10), so greedy play in `play.py` may score as well or better.
+**Gamma and epsilon end:** the seed-42 run of experiment 10 used the lowest gamma (0.97) and the highest final epsilon (0.10), but its seed-1 repeat did not reproduce the high score, so we cannot conclude that either value helps. Scores in this table were reached while the agent still took random actions (10% in experiment 10). In the group's greedy evaluation (see the README), the seed-42 model scores 30.7.
 
-**Final choice for this member:** the experiment 10 model (seed 42) as the strongest saved model, because it has the highest final score. As a hyperparameter configuration, experiment 10 is not clearly better than the others, since the seed-1 repeat scored 20.1. Experiments 1 to 9 finished within 1.5 crossings of each other, which is smaller than the seed-to-seed gap, so none of them can be called better than another. Each table run used one seed (42).
+**Final choice for this member:** the experiment 10 model (seed 42), because it has the highest final score of my ten runs (28.6 in training, 30.7 in the group's greedy evaluation). The group's final model, `dqn_model.pth`, is Ajak Chol's experiment 8. As a hyperparameter configuration, experiment 10 is not clearly better than the others, since the seed-1 repeat scored 20.1. Experiments 1 to 9 finished within 1.5 crossings of each other, which is smaller than the seed-to-seed gap, so none of them can be called better than another. Each table run used one seed (42).
 
 ## Files
 
